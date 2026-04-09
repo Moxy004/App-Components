@@ -8,7 +8,7 @@ class PrefsHelper(context: Context){
 
     var hasSeenOnboarding: Boolean
         get() = prefs.getBoolean("seen_onboarding", false)
-        set(value) = prefs.edit{ putBoolean("seen_onboardingm", value)}
+        set(value) = prefs.edit{ putBoolean("seen_onboarding", value)}
 }
 
 data class Onboarding(

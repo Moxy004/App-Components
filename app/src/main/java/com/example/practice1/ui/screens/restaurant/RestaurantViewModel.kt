@@ -1,5 +1,4 @@
 package com.example.practice1.ui.screens.restaurant
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.practice1.local.*
@@ -43,7 +42,8 @@ class BurgerViewModel(
 
             // 4. Send the actual database context to the AI
             val promptContext = "Menu: $menuContext \nPast Orders: $pastOrders"
-            val aiResponseText = aiAssistant.getInsight(instructions, promptContext, "Return the JSON Array now.")
+            val aiResponseText =
+                aiAssistant.getInsight(instructions, promptContext, "Return the JSON Array now.")
 
             try {
                 // --- BULLETPROOF JSON PARSER ---
