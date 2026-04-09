@@ -18,7 +18,6 @@ import com.example.practice1.ui.screens.map.TestScreen
 import com.example.practice1.ui.screens.onboarding.Onboarding
 import com.example.practice1.ui.screens.onboarding.OnboardingScreen
 import com.example.practice1.ui.screens.onboarding.PrefsHelper
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

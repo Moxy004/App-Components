@@ -1,35 +1,29 @@
 package com.example.practice1.ui.screens.map
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
-
 import android.Manifest
-import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
@@ -43,7 +37,7 @@ fun UserLocationMapScreen(){
       contract = ActivityResultContracts.RequestMultiplePermissions()
    ) { permissions ->
       hasLocationPermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
-         permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+              permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
       permissionRequested = true
    }
 
@@ -61,8 +55,8 @@ fun UserLocationMapScreen(){
       AndroidView(
          modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(16.dp)),
-         factory = { ctx ->
+            .clip(RoundedCornerShape(16.dp))
+         , factory = { ctx ->
             MapView(ctx).apply {
                setTileSource(TileSourceFactory.MAPNIK)
                setMultiTouchControls(true)
@@ -80,7 +74,7 @@ fun UserLocationMapScreen(){
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
          if(!permissionRequested){
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-               Text("Location Permission is required to view map....")
+               Text("Location is required to view map....")
                Button(
                   onClick = {
                      permissionLauncher.launch(
@@ -89,9 +83,9 @@ fun UserLocationMapScreen(){
                            Manifest.permission.ACCESS_COARSE_LOCATION
                         )
                      )
-                  }, modifier = Modifier.padding(top = 8.dp)
+                  }
                ) {
-                  Text("Grant Permission")
+                  Text("Request Permission")
                }
             }
          }

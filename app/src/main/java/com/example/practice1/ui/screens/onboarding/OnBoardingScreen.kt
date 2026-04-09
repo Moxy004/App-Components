@@ -3,7 +3,6 @@ package com.example.practice1.ui.screens.onboarding
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,33 +22,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.practice1.R
-import com.example.practice1.ui.theme.Gradient
 import kotlinx.coroutines.launch
 
 @Composable
 fun SkipButton(onSkipClicked: () -> Unit){
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
         TextButton(onClick = onSkipClicked) {
-            Text("Skip", color = Color.LightGray)
+            Text("Skip", color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -67,11 +58,11 @@ fun PageContent(page: Onboarding){
                 .clip(RoundedCornerShape(32.dp))
                 .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
-        ) {
+        ){
             Icon(
                 painter = painterResource(id = page.iconRes),
                 contentDescription = null,
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(60.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
@@ -79,16 +70,15 @@ fun PageContent(page: Onboarding){
         Text(
             text = page.title,
             style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
-            color = Color.White
+            fontWeight = FontWeight.ExtraBold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = page.description,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
-            color = Color.LightGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
@@ -98,14 +88,14 @@ fun PageContent(page: Onboarding){
 fun BottomControls(totalPage: Int, currentPage: Int, onNextClicked: () -> Unit){
     Column(
         modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             repeat(totalPage){ index ->
                 val isSelected = currentPage == index
-                val width by animateDpAsState(targetValue = if(isSelected) 32.dp else 10.dp, label = "dotWidth")
+                val width by animateDpAsState(targetValue = if (isSelected) 32.dp else 10.dp, label = "dotWidth")
                 val color by animateColorAsState(
-                    targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                    targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     label = "dotColor"
                 )
                 Box(modifier = Modifier.height(10.dp).width(width).clip(CircleShape).background(color))
@@ -120,7 +110,7 @@ fun BottomControls(totalPage: Int, currentPage: Int, onNextClicked: () -> Unit){
             Crossfade(targetState = currentPage == totalPage - 1, label = "btnText") { isLastPage ->
                 Text(
                     text = if (isLastPage) "Get Started" else "Next",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
@@ -130,57 +120,30 @@ fun BottomControls(totalPage: Int, currentPage: Int, onNextClicked: () -> Unit){
 @Composable
 fun OnboardingScreen(onFinished: () -> Unit){
     val pages = OnboardingDataProvider.pages
-    val pageState = rememberPagerState(pageCount = {pages.size})
+    val pagerState = rememberPagerState(pageCount = {pages.size})
     val coroutineScope = rememberCoroutineScope()
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.onboarding_img),
-            contentDescription = "Background",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+    Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+        SkipButton(onSkipClicked = onFinished)
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f)
+        ) { position ->
+            PageContent(page = pages[position])
+        }
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Gradient)
-        )
-
-        Column(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-            HorizontalPager(
-                state = pageState,
-                modifier = Modifier.weight(1f)
-            ) { position ->
-                PageContent(page = pages[position])
-            }
-            BottomControls(
-                totalPage = pages.size,
-                currentPage = pageState.currentPage,
-                onNextClicked = {
-                    if (pageState.currentPage == pages.size - 1){
-                        onFinished()
-                    } else {
-                        coroutineScope.launch {
-                            pageState.animateScrollToPage(pageState.currentPage + 1)
-                        }
+        BottomControls(
+            totalPage = pages.size,
+            currentPage = pagerState.currentPage,
+            onNextClicked = {
+                if(pagerState.currentPage == pages.size - 1){
+                    onFinished()
+                } else {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
                     }
                 }
-            )
-            SkipButton(onSkipClicked = onFinished)
-        }
-    }
-}
-
-@Preview
-@Composable
-fun view(){
-    MaterialTheme{
-        Surface(modifier = Modifier.fillMaxSize()) {
-            OnboardingScreen(
-                onFinished = {
-                }
-            )
-        }
+            }
+        )
     }
 }
